@@ -37,5 +37,8 @@ describe('FlashLoan', () => {
 
     describe('Deployment', () => {
 
+        it('sends tokens to flash loan pool contract', async () => {
+            expect(await token.balanceOf(flashLoan.address)).to.equal(tokens(1000000))
+        })
     })
 })
