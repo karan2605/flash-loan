@@ -4,12 +4,13 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "./Token.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 interface IReceiver {
     function receiveTokens(address tokenAddress, uint256 amount) external;
 }
 
-contract FlashLoan {
+contract FlashLoan is ReentrancyGuard {
     using SafeMath for uint256;
 
     Token public token;
@@ -19,13 +20,13 @@ contract FlashLoan {
         token = Token(_tokenAddress);
     }
 
-    function despositTokens(uint256 _amount) external {
+    function despositTokens(uint256 _amount) external nonReentrant {
         require(_amount > 0, "Must deposit at least one token");
         token.transferFrom(msg.sender, address(this), _amount);
         poolBalance = poolBalance.add(_amount);
     }
 
-    function flashLoan(uint256 _borrowAmount) external {
+    function flashLoan(uint256 _borrowAmount) external nonReentrant {
         require(_borrowAmount > 0, "Must borrow at least one token");
         
         uint256 balanceBefore = token.balanceOf(address(this));
