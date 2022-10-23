@@ -28,9 +28,12 @@ contract FlashLoan is ReentrancyGuard {
 
     function flashLoan(uint256 _borrowAmount) external nonReentrant {
         require(_borrowAmount > 0, "Must borrow at least one token");
-        
+
         uint256 balanceBefore = token.balanceOf(address(this));
-        require(balanceBefore >= _borrowAmount, "Not enough tokens in the pool");
+        require(
+            balanceBefore >= _borrowAmount,
+            "Not enough tokens in the pool"
+        );
 
         // Ensured by the protocol via the 'depositTokens' function
         assert(poolBalance == balanceBefore);
@@ -43,7 +46,9 @@ contract FlashLoan is ReentrancyGuard {
 
         // Ensure loan paid back
         uint256 balanceAfter = token.balanceOf(address(this));
-        require(balanceAfter >= balanceBefore, "Flash loan has not been paid back");
-
+        require(
+            balanceAfter >= balanceBefore,
+            "Flash loan has not been paid back"
+        );
     }
 }

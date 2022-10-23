@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import './FlashLoan.sol';
+import "./FlashLoan.sol";
 
 contract FlashLoanReceiver {
     FlashLoan private pool;
@@ -17,14 +17,21 @@ contract FlashLoanReceiver {
 
     function receiveTokens(address _tokenAddress, uint256 _amount) external {
         require(msg.sender == address(pool), "Sender must be pool");
+
         // Require funds received
-        require(Token(_tokenAddress).balanceOf(address(this)) == _amount, "failed to get loan");
+        require(
+            Token(_tokenAddress).balanceOf(address(this)) == _amount,
+            "failed to get loan"
+        );
 
         // Emit event
         emit LoanReceived(_tokenAddress, _amount);
 
         // Return funds to the pool
-        require(Token(_tokenAddress).transfer(msg.sender, _amount), "Transfer of tokens failed");
+        require(
+            Token(_tokenAddress).transfer(msg.sender, _amount),
+            "Transfer of tokens failed"
+        );
     }
 
     function executeFlashLoan(uint _amount) external {
