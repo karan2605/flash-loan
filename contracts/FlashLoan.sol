@@ -26,10 +26,23 @@ contract FlashLoan {
     }
 
     function flashLoan(uint256 _borrowAmount) external {
+        require(_borrowAmount > 0, "Must borrow at least one token");
+        
+        uint256 balanceBefore = token.balanceOf(address(this));
+        require(balanceBefore >= _borrowAmount, "Not enough tokens in the pool");
+
+        // Ensured by the protocol via the 'depositTokens' function
+        assert(poolBalance == balanceBefore);
+
+        // Send tokens to the receiver
         token.transfer(msg.sender, _borrowAmount);
 
+        // Use loan, Get paid back
         IReceiver(msg.sender).receiveTokens(address(token), _borrowAmount);
 
+        // Ensure loan paid back
+        uint256 balanceAfter = token.balanceOf(address(this));
+        require(balanceAfter >= balanceBefore, "Flash loan has not been paid back");
 
     }
 }
