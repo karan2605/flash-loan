@@ -16,6 +16,7 @@ contract FlashLoanReceiver {
     }
 
     function receiveTokens(address _tokenAddress, uint256 _amount) external {
+        require(msg.sender == address(pool), "Sender must be pool");
         // Require funds received
         require(Token(_tokenAddress).balanceOf(address(this)) == _amount, "failed to get loan");
 
